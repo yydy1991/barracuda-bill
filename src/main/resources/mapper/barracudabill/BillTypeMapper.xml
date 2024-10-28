@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.barracuda.barracudabill.mapper.BillTypeMapper">
+    
+    <resultMap type="BillType" id="BillTypeResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="code"    column="code"    />
+    </resultMap>
+
+    <sql id="selectBillTypeVo">
+        select id, name, code
+        from bi_bill_type
+    </sql>
+
+    <select id="selectBillTypeList" parameterType="BillType" resultMap="BillTypeResult">
+        <include refid="selectBillTypeVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+        </where>
+    </select>
+    
+    <select id="selectBillTypeById" parameterType="String" resultMap="BillTypeResult">
+        <include refid="selectBillTypeVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBillType" parameterType="BillType" useGeneratedKeys="true" keyProperty="id">
+        insert into bi_bill_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="code != null">code,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="code != null">#{code},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBillType" parameterType="BillType">
+        update bi_bill_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="code != null">code = #{code},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBillTypeById" parameterType="String">
+        delete from bi_bill_type where id = #{id}
+    </delete>
+
+    <delete id="deleteBillTypeByIds" parameterType="String">
+        delete from bi_bill_type where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
