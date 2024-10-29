@@ -1,42 +1,80 @@
 <!DOCTYPE html>
-<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:include="include :: header('修改账单')" />
+    <th:block th:include="include :: header('修改账单')"/>
 </head>
 <body class="white-bg">
-    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
-        <form class="form-horizontal m" id="form-bill-edit" th:object="${bill}">
-            <input name="id" th:field="*{id}" type="hidden">
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">金额：</label>
-                    <div class="col-sm-8">
-                        <input name="amount" th:field="*{amount}" class="form-control" type="text">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-bill-edit" th:object="${bill}">
+        <input name="id" th:field="*{id}" type="hidden">
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">支付时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </span>
+                        <input name="paymentTime" type="text" class="form-control" id="paymentTime"
+                               placeholder="yyyy-MM-dd HH:mm:ss">
                     </div>
                 </div>
             </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">备注：</label>
-                    <div class="col-sm-8">
-                        <textarea name="remark" class="form-control">[[*{remark}]]</textarea>
-                    </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">金额：</label>
+                <div class="col-sm-8">
+                    <input name="amount" th:field="*{amount}" class="form-control" type="text">
                 </div>
             </div>
-        </form>
-    </div>
-    <th:block th:include="include :: footer" />
-    <script th:inline="javascript">
-        var prefix = ctx + "barracudabill/bill";
-        $("#form-bill-edit").validate({
-            focusCleanup: true
-        });
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">账单类型：</label>
+                <div class="col-sm-8">
+                    <select th:field="*{billType}" name="billType" class="form-control"
+                            th:with="billTypes=${@billType.list()}">
+                        <option th:each="billType : ${billTypes}" th:text="${billType.name}"
+                                th:value="${billType.code}"></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <textarea name="remark" class="form-control">[[*{remark}]]</textarea>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    let bill = [[${bill}]]
+    var prefix = ctx + "barracudabill/bill";
+    $("#form-bill-edit").validate({
+        focusCleanup: true
+    });
 
-        function submitHandler() {
-            if ($.validate.form()) {
-                $.operate.save(prefix + "/edit", $('#form-bill-edit').serialize());
-            }
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/edit", $('#form-bill-edit').serialize());
         }
-    </script>
+    }
+
+    <!-- laydate示例 -->
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#paymentTime',
+            type: 'datetime',
+            trigger: 'click',
+            value: bill.paymentTime
+        });
+    });
+</script>
 </body>
 </html>
