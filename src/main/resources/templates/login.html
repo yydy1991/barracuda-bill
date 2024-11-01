@@ -2,14 +2,10 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>登录Garden记账本</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <meta name="description" content="Garden记账本">
-    <link href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
-    <link href="../static/css/font-awesome.min.css" th:href="@{/css/font-awesome.min.css}" rel="stylesheet"/>
-    <link href="../static/css/style.min.css" th:href="@{/css/style.min.css}" rel="stylesheet"/>
-    <link href="../static/css/login.min.css" th:href="@{/css/login.min.css}" rel="stylesheet"/>
-    <link href="../static/barracuda/css/ry-ui.css" th:href="@{/barracuda/css/ry-ui.css?v=4.7.9}" rel="stylesheet"/>
     <!-- 360浏览器急速模式 -->
     <meta name="renderer" content="webkit">
     <!-- 避免IE使用兼容模式 -->
@@ -18,6 +14,118 @@
     <style type="text/css">label.error {
         position: inherit;
     }</style>
+    <style>
+        * {
+            font-family: "Poppins";
+        }
+
+        body {
+            user-select: none;
+            overflow-y: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #dde5f4;
+            height: 100vh;
+        }
+
+        .screen-1 {
+            background: #f1f7fe;
+            padding: 2em;
+            display: flex;
+            flex-direction: column;
+            border-radius: 30px;
+            box-shadow: 0 0 2em #e6e9f9;
+            gap: 2em;
+        }
+
+        .screen-1 .logo {
+            margin-top: -3em;
+        }
+
+        .screen-1 .username {
+            background: white;
+            box-shadow: 0 0 2em #e6e9f9;
+            padding: 1em;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5em;
+            border-radius: 20px;
+            color: #4d4d4d;
+            margin-top: -3em;
+        }
+
+        .screen-1 .username input {
+            outline: none;
+            border: none;
+        }
+
+        .screen-1 .username input::placeholder {
+            color: black;
+            font-size: 0.9em;
+        }
+
+        .screen-1 .username ion-icon {
+            color: #4d4d4d;
+            margin-bottom: -0.2em;
+        }
+
+        .screen-1 .password {
+            background: white;
+            box-shadow: 0 0 2em #e6e9f9;
+            padding: 1em;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5em;
+            border-radius: 20px;
+            color: #4d4d4d;
+        }
+
+        .screen-1 .password input {
+            outline: none;
+            border: none;
+        }
+
+        .screen-1 .password input::placeholder {
+            color: black;
+            font-size: 0.9em;
+        }
+
+        .screen-1 .password ion-icon {
+            color: #4d4d4d;
+            margin-bottom: -0.2em;
+        }
+
+        .screen-1 .password .show-hide {
+            margin-right: -5em;
+        }
+
+        .screen-1 .login {
+            padding: 1em;
+            background: #3e4684;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        .screen-1 .footer {
+            display: flex;
+            justify-content: space-around;
+            font-size: 0.7em;
+            color: #5e5e5e;
+            gap: 14em;
+            padding-bottom: 10em;
+        }
+
+        .screen-1 .footer span {
+            cursor: pointer;
+        }
+
+        button {
+            cursor: pointer;
+        }
+    </style>
     <script>
         if (window.top !== window.self) {
             alert('未登录或登录超时。请重新登录');
@@ -25,58 +133,57 @@
         }
     </script>
 </head>
-<body class="signin">
-<div class="signinpanel">
-    <div class="row">
-        <div class="col-sm-7">
-            <div class="signin-info">
-                <div class="logopanel m-b">
-                    <h1>
-                        <!-- <img alt="[ barracuda ]" src="../static/barracuda.png" th:src="@{/barracuda.png}">-->
-                    </h1>
-                </div>
-                <div class="m-b"></div>
-                <h4>欢迎使用 <strong>Garden记账本</strong></h4>
-<!--                <ul class="m-b">-->
-<!--                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> SpringBoot</li>-->
-<!--                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> Mybatis</li>-->
-<!--                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> Shiro</li>-->
-<!--                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> Thymeleaf</li>-->
-<!--                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> Bootstrap</li>-->
-<!--                </ul>-->
-                <strong th:if="${isAllowRegister}">还没有账号？ <a th:href="@{/register}">立即注册&raquo;</a></strong>
-            </div>
-        </div>
-        <div class="col-sm-5">
-            <form id="signupForm" autocomplete="off">
-                <!--                <h4 class="no-margins">登录：</h4>-->
-                <!--                <p class="m-t-md">你若不离不弃，我必生死相依</p>-->
-                <input type="text" name="username" class="form-control uname" placeholder="用户名" value="guest"/>
-                <input type="password" name="password" class="form-control pword" placeholder="密码" value="guest"/>
-                <div class="row m-t" th:if="${captchaEnabled==true}">
-                    <div class="col-xs-6">
-                        <input type="text" name="validateCode" class="form-control code" placeholder="验证码"
-                               maxlength="5"/>
-                    </div>
-                    <div class="col-xs-6">
-                        <a href="javascript:void(0);" title="点击更换验证码">
-                            <img th:src="@{/captcha/captchaImage(type=${captchaType})}" class="imgcode" width="85%"/>
-                        </a>
-                    </div>
-                </div>
-                <div class="checkbox-custom" th:if="${isRemembered}" th:classappend="${captchaEnabled==false} ? 'm-t'">
-                    <input type="checkbox" id="rememberme" name="rememberme"> <label for="rememberme">记住我</label>
-                </div>
-                <button class="btn btn-success btn-block" id="btnSubmit" data-loading="正在验证登录，请稍候...">登录
-                </button>
-            </form>
+<body>
+<div class="screen-1">
+    <svg class="logo" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+         width="300" height="300" viewbox="0 0 640 480" xml:space="preserve">
+		    <g transform="matrix(3.31 0 0 3.31 320.4 240.4)">
+		      <circle style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(61,71,133); fill-rule: nonzero; opacity: 1;"
+                      cx="0" cy="0" r="40"></circle>
+		    </g>
+        <g transform="matrix(0.98 0 0 0.98 268.7 213.7)">
+		      <circle style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;"
+                      cx="0" cy="0" r="40"></circle>
+		    </g>
+        <g transform="matrix(1.01 0 0 1.01 362.9 210.9)">
+		      <circle style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;"
+                      cx="0" cy="0" r="40"></circle>
+		    </g>
+        <g transform="matrix(0.92 0 0 0.92 318.5 286.5)">
+		      <circle style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;"
+                      cx="0" cy="0" r="40"></circle>
+		    </g>
+        <g transform="matrix(0.16 -0.12 0.49 0.66 290.57 243.57)">
+		      <polygon
+                      style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;"
+                      points="-50,-50 -50,50 50,50 50,-50 "></polygon>
+		    </g>
+        <g transform="matrix(0.16 0.1 -0.44 0.69 342.03 248.34)">
+		      <polygon
+                      style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;"
+                      vector-effect="non-scaling-stroke" points="-50,-50 -50,50 50,50 50,-50 "></polygon>
+		    </g>
+		  </svg>
+    <div class="username">
+        <label for="username">账号</label>
+        <div class="sec-2">
+            <ion-icon name="mail-outline"></ion-icon>
+            <input id="username" name="username" placeholder="输入账号" value="guest"/>
         </div>
     </div>
-    <!--    <div class="signup-footer">-->
-    <!--        <div class="pull-left">-->
-    <!--            Copyright © 2018-2024 barracuda.vip All Rights Reserved. <br>-->
-    <!--        </div>-->
-    <!--    </div>-->
+    <div class="password">
+        <label for="password">密码</label>
+        <div class="sec-2">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+            <input id="password" class="pas" type="password" name="password" placeholder="输入密码" value="guest"/>
+            <ion-icon class="show-hide" name="eye-outline"></ion-icon>
+        </div>
+    </div>
+    <button class="login" onclick="login()" data-loading="正在验证登录，请稍候...">登录</button>
+    <div class="footer">
+        <span th:if="${isAllowRegister}"><a th:href="@{/register}">注册</a></span>
+        <span>忘记密码?</span>
+    </div>
 </div>
 <script th:inline="javascript"> var ctx = [[@{/}]]; var captchaType = [[${captchaType}]]; var captchaEnabled = [[${captchaEnabled}]];</script>
 <!--[if lte IE 8]>
