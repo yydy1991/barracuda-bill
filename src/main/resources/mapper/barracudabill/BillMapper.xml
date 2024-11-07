@@ -101,4 +101,16 @@
         </foreach>
     </update>
 
+    <select id="listBill" parameterType="Bill" resultMap="BillResult">
+        <include refid="selectBillVo"/>
+        <where>
+            <if test="billType != null  and billType != ''">and bill_type = #{billType}</if>
+            <if test="amount != null ">and amount = #{amount}</if>
+            <if test="delFlag != null">and del_flag = #{delFlag}</if>
+            <if test="params.month != null">
+                and MONTH(payment_time) = #{params.month}
+            </if>
+        </where>
+        order by payment_time desc
+    </select>
 </mapper>

@@ -12,51 +12,83 @@
 </head>
 
 <body class="gray-bg">
-
 <div class="wrapper wrapper-content white-bg">
     <div class="row">
-        <a class="btn btn-success" onclick="addBill()" shiro:hasPermission="barracudabill:bill:add">
+        <span>
+            <p id="count"></p>
+        </span>
+    </div>
+</div>
+<div class="wrapper wrapper-content white-bg">
+    <div class="row">
+        <a class="btn btn-success" onclick="addBill()">
             <i class="fa fa-plus"></i> 记一笔
         </a>
     </div>
-    <div class="row">
-        <div class="col-sm-4">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h5>请作者喝杯咖啡</h5>
+</div>
+<template id="profileTemplate">
+    <div class="col-sm-4">
+        <div class="contact-box">
+            <a href="profile.html">
+                <div class="col-sm-4">
+                    <div class="text-center">
+                        <img alt="image" class="img-circle m-t-xs img-responsive" src="%IMAGE%">
+                        <div class="m-t-xs font-bold">%userName%</div>
+                    </div>
                 </div>
-                <div class="ibox-content">
-                    <p id="pay-qrcode">
-                        <a href="javascript:;"><img th:src="@{/img/pay.png}" width="100%"
-                                                    alt="请使用手机支付宝或者微信扫码支付">
-                        </a>
-                    </p>
+                <div class="col-sm-8">
+                    <h3><strong>%userCode%</strong></h3>
+                    <p><i class="fa fa-jpy"></i> %userBalance%</p>
+                    <address>
+                        <strong>barracuda, Inc.</strong><br>
+                        E-mail: %userEmail%<br>
+                        <abbr title="Phone">Tel:</abbr> %userPhone%
+                    </address>
                 </div>
-            </div>
+                <div class="clearfix"></div>
+            </a>
         </div>
     </div>
-</div>
+</template>
 </body>
 <script th:src="@{/js/jquery.min.js}"></script>
 <script th:src="@{/js/bootstrap.min.js}"></script>
 <script th:src="@{/ajax/libs/layer/layer.min.js}"></script>
 <th:block th:include="include :: footer"/>
+<th:block th:include="include :: bootstrap-table-custom-view-js"/>
+<script th:src="@{/barracudabill/js/bill.js}"></script>
 <script th:inline="javascript">
-    // $('#pay-qrcode').click(function () {
-    //     var html = $(this).html();
-    //     parent.layer.open({
-    //         title: false,
-    //         type: 1,
-    //         closeBtn: false,
-    //         shadeClose: true,
-    //         area: ['600px', '360px'],
-    //         content: html
-    //     });
-    // });
+    var prefix = ctx + "barracudabill/bill";
 
     function addBill() {
         $.modal.openFull("添加账单", ctx + "barracudabill/bill/add");
     }
+
+    // 获取当前月份的账单
+    function listBillByMonth() {
+        // 获取当前月份
+        let month = new Date().getMonth() + 1;
+        return bill.listBillByMonth(month);
+    }
+
+    // 获取当前月份的账单的总额
+    function getCount(bills) {
+        let result = 0
+        for (let bill of bills) {
+            result += bill.amount
+        }
+        return result
+    }
+
+    function initPage() {
+        let bills = listBillByMonth();
+        let count = getCount(bills)
+        $("#count").text("本月总支出 " + count + " 元")
+    }
+
+    $(function () {
+        initPage()
+    })
 </script>
 </body>
 </html>

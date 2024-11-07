@@ -58,7 +58,28 @@
 
     function submitHandler() {
         if ($.validate.form()) {
-            $.operate.save(prefix + "/add", $('#form-bill-add').serialize());
+            let url = prefix + "/add"
+            let data = $('#form-bill-add').serialize()
+            var config = {
+                url: url,
+                type: "post",
+                dataType: "json",
+                data: data,
+                beforeSend: function () {
+                    $.modal.loading("正在处理中，请稍候...");
+                    $.modal.disable();
+                },
+                success: function(result) {
+                    var parent = activeWindow();
+                    $.modal.close();
+                    parent.$.modal.msgSuccess(result.msg);
+                    parent.$.table.refresh();
+                    parent.initPage();
+                }
+            };
+            $.ajax(config)
+
+
         }
     }
 

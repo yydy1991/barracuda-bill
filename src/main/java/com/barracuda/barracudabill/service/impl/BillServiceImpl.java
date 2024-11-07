@@ -1,7 +1,9 @@
 package com.barracuda.barracudabill.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
+import com.barracuda.barracudabill.tool.UserTool;
 import com.barracuda.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +54,7 @@ public class BillServiceImpl implements IBillService {
     @Override
     public int insertBill(Bill bill) {
         bill.setCreateTime(DateUtils.getNowDate());
+        bill.setCreateBy(UserTool.getCurrentUserLoginName());
         return billMapper.insertBill(bill);
     }
 
@@ -64,6 +67,7 @@ public class BillServiceImpl implements IBillService {
     @Override
     public int updateBill(Bill bill) {
         bill.setUpdateTime(DateUtils.getNowDate());
+        bill.setUpdateBy(UserTool.getCurrentUserLoginName());
         return billMapper.updateBill(bill);
     }
 
@@ -87,5 +91,20 @@ public class BillServiceImpl implements IBillService {
     @Override
     public int deleteBillById(String id) {
         return billMapper.deleteBillById(id);
+    }
+
+    /**
+     * 查询该用户的指定月份的账单列表
+     *
+     * @param username
+     * @param month
+     */
+    @Override
+    public List<Bill> listBill(String username, Integer month) {
+        Bill bill = new Bill();
+        bill.setCreateBy(username);
+        Map<String, Object> params = bill.getParams();
+        params.put("month", month);
+        return billMapper.listBill(bill);
     }
 }

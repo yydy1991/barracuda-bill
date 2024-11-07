@@ -58,4 +58,6 @@ public interface BillMapper
      * @return 结果
      */
     public int deleteBillByIds(String[] ids);
+
+    List<Bill> listBill(Bill bill);
 }
