@@ -32,10 +32,10 @@ public class BillRestController extends BaseController {
     @Resource
     private IBillService billService;
 
-    @GetMapping("/listBillByMonth")
-    public AjaxResult listBillByMonth(Integer month) {
+    @GetMapping("/listBillByYearAndMonth")
+    public AjaxResult listBillByYearAndMonth(Integer year, Integer month) {
         String currentUserLoginName = UserTool.getCurrentUserLoginName();
-        List<Bill> bills = billService.listBill(currentUserLoginName, month);
+        List<Bill> bills = billService.listBill(currentUserLoginName, year, month);
         return AjaxResult.success(bills);
     }
 }

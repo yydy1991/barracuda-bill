@@ -64,5 +64,5 @@ public interface IBillService {
     /**
      * 查询该用户的指定月份的账单列表
      */
-    List<Bill> listBill(String username, Integer month);
+    List<Bill> listBill(String username, Integer year, Integer month);
 }

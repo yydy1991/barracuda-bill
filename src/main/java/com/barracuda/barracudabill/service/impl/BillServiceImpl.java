@@ -100,11 +100,12 @@ public class BillServiceImpl implements IBillService {
      * @param month
      */
     @Override
-    public List<Bill> listBill(String username, Integer month) {
+    public List<Bill> listBill(String username, Integer year, Integer month) {
         Bill bill = new Bill();
         bill.setCreateBy(username);
         Map<String, Object> params = bill.getParams();
         params.put("month", month);
+        params.put("year", year);
         return billMapper.listBill(bill);
     }
 }

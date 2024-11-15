@@ -1,11 +1,11 @@
 let bill = {
     urls: {
-        listBillByMonth: ctx + 'barracudabill/bill/rest/listBillByMonth'
+        listBillByYearAndMonth: ctx + 'barracudabill/bill/rest/listBillByYearAndMonth'
     },
-    listBillByMonth: function (month) {
+    listBillByYearAndMonth: function (year, month) {
         let data = {
-            month
+            year, month
         }
-        return $.BA.ajax.get(this.urls.listBillByMonth, data);
+        return $.BA.ajax.get(this.urls.listBillByYearAndMonth, data);
     }
 }

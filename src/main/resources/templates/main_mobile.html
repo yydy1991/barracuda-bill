@@ -9,14 +9,45 @@
     <link href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
     <link href="../static/css/font-awesome.min.css" th:href="@{/css/font-awesome.min.css}" rel="stylesheet"/>
     <link href="../static/css/style.min.css" th:href="@{/css/style.min.css}" rel="stylesheet"/>
+    <th:block th:include="include :: datetimepicker-css"/>
+    <style>
+        .select-time-div {
+            width: 33.33333333%;
+            float: left;
+        }
+
+        .bill-group-date {
+            width: 50%;
+            float: left;
+        }
+
+        .count-out {
+            width: 66.66666667%;
+            float: left;
+        }
+
+        .count-out > p {
+            padding: 8px;
+            margin: 0;
+        }
+
+        .bill-group-by-date {
+            margin: 10px;
+        }
+    </style>
 </head>
 
 <body class="gray-bg">
-<div class="wrapper wrapper-content white-bg">
+<div class="wrapper wrapper-content white-bg area-1">
     <div class="row">
-        <span>
+        <!--        时间下拉选-->
+        <div class="select-time-div input-group date">
+            <input onchange="count(this.value)" type="text" class="form-control" id="datetimepicker">
+        </div>
+        <!--        总支出-->
+        <div class="count-out">
             <p id="count"></p>
-        </span>
+        </div>
     </div>
 </div>
 <div class="wrapper wrapper-content white-bg">
@@ -26,27 +57,25 @@
         </a>
     </div>
 </div>
-<template id="profileTemplate">
-    <div class="col-sm-4">
-        <div class="contact-box">
-            <a href="profile.html">
-                <div class="col-sm-4">
-                    <div class="text-center">
-                        <img alt="image" class="img-circle m-t-xs img-responsive" src="%IMAGE%">
-                        <div class="m-t-xs font-bold">%userName%</div>
-                    </div>
-                </div>
-                <div class="col-sm-8">
-                    <h3><strong>%userCode%</strong></h3>
-                    <p><i class="fa fa-jpy"></i> %userBalance%</p>
-                    <address>
-                        <strong>barracuda, Inc.</strong><br>
-                        E-mail: %userEmail%<br>
-                        <abbr title="Phone">Tel:</abbr> %userPhone%
-                    </address>
-                </div>
-                <div class="clearfix"></div>
-            </a>
+<div class="gray-bg area-2">
+
+</div>
+<template id="template">
+    <div class="wrapper wrapper-content bill-group-by-date white-bg">
+        <div class="row">
+            <div class="bill-group-date">$paymentTime</div>
+        </div>
+
+        <div class="row">
+            <div class="bill-group-date">$type</div>
+        </div>
+
+        <div class="row">
+            <div class="bill-group-date">$amount元</div>
+        </div>
+
+        <div class="row">
+            <div class="bill-group-date">$remark</div>
         </div>
     </div>
 </template>
@@ -55,8 +84,9 @@
 <script th:src="@{/js/bootstrap.min.js}"></script>
 <script th:src="@{/ajax/libs/layer/layer.min.js}"></script>
 <th:block th:include="include :: footer"/>
-<th:block th:include="include :: bootstrap-table-custom-view-js"/>
+<th:block th:include="include :: datetimepicker-js"/>
 <script th:src="@{/barracudabill/js/bill.js}"></script>
+<script th:src="@{/barracudabill/js/billtype.js}"></script>
 <script th:inline="javascript">
     var prefix = ctx + "barracudabill/bill";
 
@@ -65,10 +95,12 @@
     }
 
     // 获取当前月份的账单
-    function listBillByMonth() {
+    function listBillByYearAndMonth(time) {
+        let split = time.split("-");
+        let year = split[0];
+        let month = split[1];
         // 获取当前月份
-        let month = new Date().getMonth() + 1;
-        return bill.listBillByMonth(month);
+        return bill.listBillByYearAndMonth(year, month);
     }
 
     // 获取当前月份的账单的总额
@@ -77,13 +109,80 @@
         for (let bill of bills) {
             result += bill.amount
         }
-        return result
+        return result.toFixed(2)
+    }
+
+    function setBillsHtml(bills) {
+        var list = bill_type.list();
+
+        // 置空area-2
+        let $area = $(".area-2");
+        $area.html("");
+        // 按paymentTime排序
+        for (let bill of bills) {
+            // 获取template的html
+            let template = $("#template").html();
+            let paymentTime = bill.paymentTime;
+            let billType = bill.billType;
+            billType = bill_type.getName(billType, list);
+            let amount = bill.amount;
+            let remark = bill.remark;
+            template = template.replace("$paymentTime", paymentTime)
+            template = template.replace("$type", billType)
+            template = template.replace("$amount", amount)
+            template = template.replace("$remark", remark)
+            $area.append(template)
+        }
+    }
+
+    function count(time) {
+        if (!time) {
+            time = $("#datetimepicker").val();
+        }
+        let bills = listBillByYearAndMonth(time);
+        // 将bills列表按paymentTime的日期分组
+        let billsMap = {}
+        for (let bill of bills) {
+            let paymentTime = bill.paymentTime.split(" ")[0]
+            if (!billsMap[paymentTime]) {
+                billsMap[paymentTime] = []
+            }
+            billsMap[paymentTime].push(bill)
+        }
+        let billsArr = []
+        for (let paymentTime in billsMap) {
+            billsArr.push({
+                paymentTime: paymentTime,
+                bills: billsMap[paymentTime]
+            })
+        }
+        // 按paymentTime排序
+        billsArr.sort((a, b) => {
+            return new Date(b.paymentTime).getTime() - new Date(a.paymentTime).getTime()
+        })
+        for (let bill of billsArr) {
+            console.log(bill.paymentTime)
+            console.table(bill.bills)
+        }
+        setBillsHtml(bills)
+        // 打印表格数据
+        let count = getCount(bills)
+        $("#count").text("总支出 " + count + " 元")
     }
 
     function initPage() {
-        let bills = listBillByMonth();
-        let count = getCount(bills)
-        $("#count").text("本月总支出 " + count + " 元")
+        // 初始化时间下拉选
+        // 将date格式化为yyyy-MM
+        var date = new Date();
+        $("#datetimepicker").val(date.getFullYear() + "-" + (date.getMonth() + 1))
+        $("#datetimepicker").datetimepicker({
+            startView: 3,
+            format: "yyyy-mm",
+            endDate: date,
+            minView: 3,
+            autoclose: true
+        });
+        count();
     }
 
     $(function () {
